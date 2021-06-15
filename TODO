@@ -10,3 +10,14 @@
 ? use proxy for entities
 - centralize variables
 - use default value for generics esp. void
+- change all ServerResponse to IServerResponse
+- use index files
+- decouple controllers from express folder
+- rewrite async methods
+- use dictionary interface
+- refactor cors middleware test
+- enclose in promise settimeouts in tests
+- add expect.assertions on tests
+- create example .env
+- 
+ 
