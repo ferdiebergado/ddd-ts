@@ -4,12 +4,12 @@ import { HttpMiddleware } from './http.middleware'
 export type RequestHandler = RequestListener | HttpMiddleware
 export type RequestHandlers = Array<RequestHandler>
 
-export interface Route {
+export interface IRoute {
   path: string
   handlers: RequestHandlers
 }
 
-export interface RouteGroup {
+export interface IRouteGroup {
   path: string
   router: any
 }

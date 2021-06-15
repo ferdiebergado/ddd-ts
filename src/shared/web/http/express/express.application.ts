@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express'
 import { IApplication } from '../../../../app'
 import { notFound, errorHandler, cors, logger } from './middlewares'
-import { RouteGroup } from '../http.router.interface'
+import { IRouteGroup } from '../http.router.interface'
 
 class ExpressApplication implements IApplication {
   private readonly _app: express.Application
@@ -16,7 +16,7 @@ class ExpressApplication implements IApplication {
     this._setupRoutes()
   }
 
-  addRoute(route: RouteGroup): void {
+  addRoute(route: IRouteGroup): void {
     const { path, router } = route
     this._app.use(path, router.router)
   }
