@@ -1,7 +1,7 @@
 import { IUser, User } from '../domain/entities/user.entity'
 import { Result } from '../../../shared/result.interface'
 import { IService } from '../../../shared/service.interface'
-import { IUserRepository } from './user.repository'
+import { IUserRepository } from './user.repository.interface'
 import { EntityId, ValidationError } from '../../../shared/entity'
 import { Messages } from '../../../messages'
 import { IHashProvider } from './hash.provider.interface'

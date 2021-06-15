@@ -5,7 +5,7 @@ import { IService } from '../../../shared/service.interface'
 import { isEmail } from '../../../shared/utils/helpers'
 import { IUser } from '../domain/entities/user.entity'
 import { IHashProvider } from './hash.provider.interface'
-import { IUserRepository } from './user.repository'
+import { IUserRepository } from './user.repository.interface'
 
 export type LoginUserDto = Pick<IUser, 'email' | 'password'>
 export type UserLoginResult = Result<ValidationErrorBag>

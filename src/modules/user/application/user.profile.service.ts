@@ -3,7 +3,7 @@ import { EntityId } from '../../../shared/entity'
 import { Result } from '../../../shared/result.interface'
 import { IService } from '../../../shared/service.interface'
 import { IUser } from '../domain/entities/user.entity'
-import { IUserRepository } from './user.repository'
+import { IUserRepository } from './user.repository.interface'
 
 export type UserProfile = Pick<IUser, 'firstName' | 'lastName' | 'email'>
 export type UserProfileResult = Result<UserProfile>

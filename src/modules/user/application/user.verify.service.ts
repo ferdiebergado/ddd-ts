@@ -1,6 +1,6 @@
 import { Result } from '../../../shared/result.interface'
 import { IService } from '../../../shared/service.interface'
-import { IUserRepository } from './user.repository'
+import { IUserRepository } from './user.repository.interface'
 import { Messages } from '../../../messages'
 import { EntityIdField } from '../../../shared/entity'
 import { IJwtProvider } from '../../../shared/security/jwt/jwt.provider.interface'

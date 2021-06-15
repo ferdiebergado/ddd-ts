@@ -1,4 +1,4 @@
-import { IUserRepository } from '../../../application/user.repository'
+import { IUserRepository } from '../../../application/user.repository.interface'
 import { User, UserEntity } from '../../../domain/entities/user.entity'
 import { MongodbRepository } from '../../../../../shared/persistence/mongodb/mongodb.repository'
 
