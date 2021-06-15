@@ -12,6 +12,8 @@ import { Messages } from '../../../../messages'
 import { User } from '../../domain/entities/user.entity'
 import { RegisterUserDto } from '../../application/user.register.service'
 import { randomString } from '../../../../shared/utils/helpers'
+import { IServerResponsePayload } from '../../../../shared/web/http'
+import { EntityIdField } from '../../../../shared/entity'
 
 describe('User Registration', () => {
   afterAll(async () => {
@@ -27,7 +29,7 @@ describe('User Registration', () => {
     it('should return success and user id', async () => {
       const { statusCode, body } = await registerUser(user)
       expect(statusCode).toEqual(201)
-      expect(body).toEqual({
+      expect(body).toEqual<IServerResponsePayload<EntityIdField>>({
         status: 'ok',
         message: Messages.REGISTRATION_SUCCESS,
         data: { _id: expect.any(String) },
