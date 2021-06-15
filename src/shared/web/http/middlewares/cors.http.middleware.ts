@@ -6,7 +6,7 @@ const { cors } = config.web.http
 export default (
   req: IncomingMessage,
   res: ServerResponse,
-  cb: () => any
+  next: () => any
 ): void => {
   res.setHeader('Access-Control-Allow-Origin', cors.origin)
   if (req.method && req.method === 'OPTIONS') {
@@ -15,5 +15,5 @@ export default (
     res.statusCode = 204
     return res.end()
   }
-  cb()
+  next()
 }
