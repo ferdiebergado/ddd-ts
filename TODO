@@ -1,0 +1,12 @@
+- use api version folder
+? create server class
+- global error handler
+- create factories
+- add types to config for implementations
+- rate limit middleware
+! create database class
+- abstract middleware setup
+- fix logging
+? use proxy for entities
+- centralize variables
+- use default value for generics esp. void
