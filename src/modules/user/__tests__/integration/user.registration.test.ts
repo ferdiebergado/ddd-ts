@@ -216,7 +216,7 @@ describe('User Registration', () => {
             expect.stringContaining('Please verify your account')
           )
           resolve()
-        }, 2500)
+        }, 500)
       )
     })
   })
