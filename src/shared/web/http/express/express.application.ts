@@ -1,9 +1,9 @@
 import express, { Request, Response } from 'express'
-import { IApplication } from '../../../../app'
+import { IRequestListener } from '../../../../app'
 import { notFound, errorHandler, cors, logger } from './middlewares'
-import { IRouteGroup } from '../http.router.interface'
+import { IRouteGroup } from '../.'
 
-class ExpressApplication implements IApplication {
+class ExpressApplication implements IRequestListener {
   private readonly _app: express.Application
 
   constructor() {

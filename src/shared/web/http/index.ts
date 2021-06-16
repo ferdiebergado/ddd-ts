@@ -6,6 +6,7 @@ import {
   IServerResponse,
   IServerResponsePayload,
 } from './http.response.interface'
+import { IRouteGroup } from './http.router.interface'
 
 const router = new ExpressRouter()
 
@@ -15,5 +16,6 @@ export {
   IRequest,
   IServerResponse,
   IServerResponsePayload,
+  IRouteGroup,
   router,
 }

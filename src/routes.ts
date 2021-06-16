@@ -1,7 +1,7 @@
 import config from './config'
 import authRouter from './modules/user/infrastructure/web/http/auth.routes'
 import userRouter from './modules/user/infrastructure/web/http/user.routes'
-import { IRouteGroup } from './shared/web/http/http.router.interface'
+import { IRouteGroup } from './shared/web/http'
 
 const { baseUrl } = config.web.http
 
