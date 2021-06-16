@@ -1,5 +1,5 @@
 import { HttpMiddleware, router } from '../../../../../shared/web/http'
-import { userProfileController } from './express/controllers'
+import { userProfileController } from '.'
 
 router.addRoute('get', '/:id', userProfileController.dispatch as HttpMiddleware)
 

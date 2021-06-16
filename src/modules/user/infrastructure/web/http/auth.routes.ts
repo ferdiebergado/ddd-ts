@@ -4,7 +4,7 @@ import {
   registerUserController,
   verifyUserController,
   loginUserController,
-} from './express/controllers'
+} from '.'
 
 router.addRoute(
   'post',

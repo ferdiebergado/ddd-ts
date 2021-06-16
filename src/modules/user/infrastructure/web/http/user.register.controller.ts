@@ -1,19 +1,20 @@
-import { NextFunction, Request, Response } from 'express'
-import { RegisterUserService } from '../../../../../application/user.register.service'
-import { EntityIdField } from '../../../../../../../shared/entity'
-import { AppError, Errors, HttpCodes } from '../../../../../../../shared/error'
+import { RegisterUserService } from '../../../application/user.register.service'
+import { EntityIdField } from '../../../../../shared/entity'
+import { AppError, Errors, HttpCodes } from '../../../../../shared/error'
 import {
   IController,
+  IRequest,
+  IServerResponse,
   IServerResponsePayload,
-} from '../../../../../../../shared/web/http'
+} from '../../../../../shared/web/http'
 
 export class RegisterUserController implements IController {
   constructor(private readonly _registerUserService: RegisterUserService) {}
 
   dispatch = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
+    req: IRequest,
+    res: IServerResponse,
+    next: (...args: any[]) => any
   ): Promise<void> => {
     try {
       const result = await this._registerUserService.handle(req.body)

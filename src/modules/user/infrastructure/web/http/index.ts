@@ -1,14 +1,14 @@
-import { RegisterUserService } from '../../../../../application/user.register.service'
-import { UserLoginService } from '../../../../../application/user.login.service'
-import { VerifyUserService } from '../../../../../application/user.verify.service'
+import { RegisterUserService } from '../../../application/user.register.service'
+import { UserLoginService } from '../../../application/user.login.service'
+import { VerifyUserService } from '../../../application/user.verify.service'
 import { RegisterUserController } from './user.register.controller'
 import { LoginUserController } from './user.login.controller'
 import { VerifyUserController } from './user.verify.controller'
-import { userRepository } from '../../../../persistence'
-import { CryptoHashProvider } from '../../../../../domain/providers/hash.provider'
-import { jwtProvider } from '../../../../../../../shared/security'
-import { UserProfileController } from '../../user.profile.controller'
-import { UserProfileService } from '../../../../../application/user.profile.service'
+import { userRepository } from '../../persistence'
+import { CryptoHashProvider } from '../../../domain/providers/hash.provider'
+import { jwtProvider } from '../../../../../shared/security'
+import { UserProfileController } from './user.profile.controller'
+import { UserProfileService } from '../../../application/user.profile.service'
 
 const hashProvider = new CryptoHashProvider()
 const registerUserService = new RegisterUserService(

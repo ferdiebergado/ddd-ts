@@ -1,19 +1,20 @@
-import { NextFunction, Request, Response } from 'express'
 import { JsonWebTokenError } from 'jsonwebtoken'
-import { VerifyUserService } from '../../../../../application/user.verify.service'
+import { VerifyUserService } from '../../../application/user.verify.service'
 import {
   IController,
+  IRequest,
+  IServerResponse,
   IServerResponsePayload,
-} from '../../../../../../../shared/web/http'
-import { AppError, Errors, HttpCodes } from '../../../../../../../shared/error'
+} from '../../../../../shared/web/http'
+import { AppError, Errors, HttpCodes } from '../../../../../shared/error'
 
 export class VerifyUserController implements IController {
   constructor(private readonly _verifyUserService: VerifyUserService) {}
 
   dispatch = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
+    req: IRequest,
+    res: IServerResponse,
+    next: (...args: any[]) => any
   ): Promise<void> => {
     try {
       const result = await this._verifyUserService.handle(req.params.token)
