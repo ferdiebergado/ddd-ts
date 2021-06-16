@@ -21,12 +21,17 @@ describe('User Registration', () => {
   })
 
   afterEach(async () => {
+    // return new Promise<void>((resolve) =>
+    //   setTimeout(async () => {
     const result = await mailer.latestTo(user.email)
-    return await mailer.deleteMessage(result.ID)
+    await mailer.deleteMessage(result.ID)
+    //     resolve()
+    //   }, 300)
+    // )
   })
 
-  describe('POST ' + register, () => {
-    it('should return success and user id', async () => {
+  describe(`POST ${register} #api`, () => {
+    it('should return success and user id when input is valid', async () => {
       const { statusCode, body } = await registerUser(user)
       expect(statusCode).toEqual(201)
       expect(body).toEqual<IServerResponsePayload<EntityIdField>>({
@@ -200,16 +205,19 @@ describe('User Registration', () => {
       })
     })
 
-    it('sends a verification email', async () => {
+    it('sends a verification email when input is valid #email', async () => {
       await registerUser(user)
 
-      setTimeout(async () => {
-        const { subject, html } = await mailer.latestTo(user.email)
-        expect(subject).toBe(Messages.USER_VERIFICATION)
-        expect(html).toEqual(
-          expect.stringContaining('Please verify your account')
-        )
-      }, 500)
+      return new Promise<void>((resolve) =>
+        setTimeout(async () => {
+          const { subject, html } = await mailer.latestTo(user.email)
+          expect(subject).toBe(Messages.USER_VERIFICATION)
+          expect(html).toEqual(
+            expect.stringContaining('Please verify your account')
+          )
+          resolve()
+        }, 2500)
+      )
     })
   })
 })
