@@ -3,131 +3,133 @@ import {
   login,
   registerAndVerifyUser,
   dropTestUserStorage,
-} from '../__setup__/user.setup'
-import { user } from '../__fixtures__/user.fixtures'
-import { LoginUserDto } from '../../application/user.login.service'
-import { Messages } from '../../../../messages'
-import { IServerResponsePayload } from '../../../../shared/web/http'
-import { ValidationErrorBag } from '../../../../shared/entity'
-import { userRepository } from '../../../../modules/user/infrastructure/persistence'
+} from '../__setup__/user.setup';
+import { user } from '../__fixtures__/user.fixtures';
+import { LoginUserDto } from '../../application/user.login.service';
+import { Messages } from '../../../../messages';
+import { IServerResponsePayload } from '../../../../shared/web/http';
+import { ValidationErrorBag } from '../../../../shared/entity';
+import { userRepository } from '../../infrastructure/persistence';
 
 describe('User Login', () => {
-  beforeAll(async () => {
-    return await registerAndVerifyUser()
-  })
+  beforeAll(async () => registerAndVerifyUser());
 
-  afterAll(async () => {
-    return await dropTestUserStorage()
-  })
+  afterAll(async () => dropTestUserStorage());
 
-  describe('POST ' + login, () => {
-    it('should login the user', async () => {
-      const creds: LoginUserDto = {
-        email: user.email,
-        password: user.password,
-      }
-
-      setTimeout(async () => {
-        const { statusCode, body } = await loginUser(creds)
-        expect(statusCode).toBe(200)
-        expect(body).toEqual<IServerResponsePayload<void>>({
-          status: 'ok',
-          message: Messages.LOGGED_IN,
-        })
-      }, 100)
-    })
+  describe(`POST ${login}`, () => {
+    it('should login the user', async () =>
+      new Promise<void>((resolve) =>
+        setTimeout(async () => {
+          const creds: LoginUserDto = {
+            email: user.email,
+            password: user.password,
+          };
+          const { statusCode, body } = await loginUser(creds);
+          expect(statusCode).toBe(200);
+          expect(body).toEqual<IServerResponsePayload<void>>({
+            status: 'ok',
+            message: Messages.LOGGED_IN,
+          });
+          resolve();
+        }, 300),
+      ));
 
     it.each(['email', 'password'])(
       'should return an error when %s is empty',
-      async (field) => {
-        let creds: LoginUserDto = {
-          email: user.email,
-          password: user.password,
-        }
-        creds = { ...creds, [field]: null }
+      async (field) =>
+        new Promise<void>((resolve) =>
+          setTimeout(async () => {
+            let creds: LoginUserDto = {
+              email: user.email,
+              password: user.password,
+            };
+            creds = { ...creds, [field]: null };
+            const { statusCode, body } = await loginUser(creds);
+            expect(statusCode).toBe(400);
 
+            expect(body).toEqual<IServerResponsePayload<ValidationErrorBag>>({
+              status: 'failed',
+              message: Messages.INVALID_INPUT,
+              data: {
+                errors: [{ field, message: `${field} is required` }],
+              },
+            });
+            resolve();
+          }, 100),
+        ),
+    );
+
+    // eslint-disable-next-line jest/expect-expect
+    it('should return an error when user email does not exist', async () =>
+      new Promise<void>((resolve) =>
         setTimeout(async () => {
-          const { statusCode, body } = await loginUser(creds)
-          expect(statusCode).toBe(400)
+          const creds: LoginUserDto = {
+            email: 'abc@example.com',
+            password: user.password,
+          };
+          const { statusCode, body } = await loginUser(creds);
 
+          expect(statusCode).toBe(401);
           expect(body).toEqual<IServerResponsePayload<ValidationErrorBag>>({
             status: 'failed',
-            message: Messages.INVALID_INPUT,
+            message: Messages.INVALID_USER,
             data: {
-              errors: [{ field, message: `${field} is required` }],
+              errors: [{ field: 'email', message: Messages.INVALID_USER }],
             },
-          })
-        }, 100)
-      }
-    )
+          });
+          resolve();
+        }, 100),
+      ));
 
     // eslint-disable-next-line jest/expect-expect
-    it('should return an error when user email does not exist', async () => {
-      const creds: LoginUserDto = {
-        email: 'abc@example.com',
-        password: user.password,
-      }
+    it('should return an error when password is incorrect', async () =>
+      new Promise<void>((resolve) =>
+        setTimeout(async () => {
+          const creds: LoginUserDto = {
+            email: user.email,
+            password: 'incorrect_password',
+          };
+          const { statusCode, body } = await loginUser(creds);
 
-      setTimeout(async () => {
-        const { statusCode, body } = await loginUser(creds)
-
-        expect(statusCode).toBe(401)
-        expect(body).toEqual<IServerResponsePayload<ValidationErrorBag>>({
-          status: 'failed',
-          message: Messages.INVALID_USER,
-          data: {
-            errors: [{ field: 'email', message: Messages.INVALID_USER }],
-          },
-        })
-      }, 100)
-    })
-
-    // eslint-disable-next-line jest/expect-expect
-    it('should return an error when password is incorrect', async () => {
-      const creds: LoginUserDto = {
-        email: user.email,
-        password: 'incorrect_password',
-      }
-
-      setTimeout(async () => {
-        const { statusCode, body } = await loginUser(creds)
-
-        expect(statusCode).toBe(401)
-        expect(body).toEqual<IServerResponsePayload<ValidationErrorBag>>({
-          status: 'failed',
-          message: Messages.INVALID_USER,
-          data: {
-            errors: [{ field: 'email', message: Messages.INVALID_USER }],
-          },
-        })
-      }, 100)
-    })
+          expect(statusCode).toBe(401);
+          expect(body).toEqual<IServerResponsePayload<ValidationErrorBag>>({
+            status: 'failed',
+            message: Messages.INVALID_USER,
+            data: {
+              errors: [{ field: 'email', message: Messages.INVALID_USER }],
+            },
+          });
+          resolve();
+        }, 100),
+      ));
 
     it('should return an error when email is not yet verified', async () => {
       await userRepository.update(
         { email: user.email },
         {
           emailVerifiedAt: '',
-        }
-      )
+        },
+      );
 
-      const creds: LoginUserDto = {
-        email: user.email,
-        password: user.password,
-      }
-
-      setTimeout(async () => {
-        const { statusCode, body } = await loginUser(creds)
-        expect(statusCode).toBe(401)
-        expect(body).toEqual<IServerResponsePayload<ValidationErrorBag>>({
-          status: 'failed',
-          message: Messages.EMAIL_UNVERIFIED,
-          data: {
-            errors: [{ field: 'email', message: Messages.EMAIL_UNVERIFIED }],
-          },
-        })
-      }, 100)
-    })
+      return new Promise<void>((resolve) =>
+        setTimeout(async () => {
+          const creds: LoginUserDto = {
+            email: user.email,
+            password: user.password,
+          };
+          const { statusCode, body } = await loginUser(creds);
+          expect(statusCode).toBe(401);
+          expect(body).toEqual<IServerResponsePayload<ValidationErrorBag>>({
+            status: 'failed',
+            message: Messages.EMAIL_UNVERIFIED,
+            data: {
+              errors: [{ field: 'email', message: Messages.EMAIL_UNVERIFIED }],
+            },
+          });
+          resolve();
+        }, 100),
+      );
+    });
 
     it('should return an error when account is deactivated', async () => {
       await userRepository.update(
@@ -135,25 +137,27 @@ describe('User Login', () => {
         {
           isActive: false,
           emailVerifiedAt: new Date().toISOString(),
-        }
-      )
+        },
+      );
 
-      const creds: LoginUserDto = {
-        email: user.email,
-        password: user.password,
-      }
-
-      setTimeout(async () => {
-        const { statusCode, body } = await loginUser(creds)
-        expect(statusCode).toBe(401)
-        expect(body).toEqual<IServerResponsePayload<ValidationErrorBag>>({
-          status: 'failed',
-          message: Messages.USER_DEACTIVATED,
-          data: {
-            errors: [{ field: 'email', message: Messages.USER_DEACTIVATED }],
-          },
-        })
-      }, 500)
-    })
-  })
-})
+      return new Promise<void>((resolve) =>
+        setTimeout(async () => {
+          const creds: LoginUserDto = {
+            email: user.email,
+            password: user.password,
+          };
+          const { statusCode, body } = await loginUser(creds);
+          expect(statusCode).toBe(401);
+          expect(body).toEqual<IServerResponsePayload<ValidationErrorBag>>({
+            status: 'failed',
+            message: Messages.USER_DEACTIVATED,
+            data: {
+              errors: [{ field: 'email', message: Messages.USER_DEACTIVATED }],
+            },
+          });
+          resolve();
+        }, 500),
+      );
+    });
+  });
+});
