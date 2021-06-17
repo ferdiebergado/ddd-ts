@@ -12,9 +12,11 @@ import { ValidationErrorBag } from '../../../../shared/entity';
 import { userRepository } from '../../infrastructure/persistence';
 
 describe('User Login', () => {
-  beforeAll(async () => registerAndVerifyUser());
+  // eslint-disable-next-line @typescript-eslint/return-await
+  beforeAll(async () => await registerAndVerifyUser());
 
-  afterAll(async () => dropTestUserStorage());
+  // eslint-disable-next-line @typescript-eslint/return-await
+  afterAll(async () => await dropTestUserStorage());
 
   describe(`POST ${login}`, () => {
     it('should login the user', async () =>
