@@ -14,7 +14,7 @@ export default {
   },
   db: {
     mongodb: {
-      uri: process.env.MONGODB_URI || 'localhost:27017',
+      uri: process.env.MONGODB_URI || 'mongodb://localhost:27017',
       dbName:
         process.env.NODE_ENV === 'production'
           ? process.env.MONGODB_NAME
