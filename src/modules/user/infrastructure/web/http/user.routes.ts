@@ -1,6 +1,12 @@
-import { HttpMiddleware, router } from '../../../../../shared/web/http'
-import { userProfileController } from '.'
+import { HttpMiddleware, router } from '../../../../../shared/web/http';
+import { userProfileController } from '.';
 
-router.addRoute('get', '/:id', userProfileController.dispatch as HttpMiddleware)
+const userRouter = router();
 
-export default router
+userRouter.addRoute(
+  'get',
+  '/:id',
+  userProfileController.dispatch as HttpMiddleware,
+);
+
+export default userRouter;

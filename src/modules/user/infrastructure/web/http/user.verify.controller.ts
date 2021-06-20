@@ -1,36 +1,39 @@
-import { JsonWebTokenError } from 'jsonwebtoken'
-import { VerifyUserService } from '../../../application/user.verify.service'
+import { JsonWebTokenError } from 'jsonwebtoken';
 import {
   IController,
   IRequest,
   IServerResponse,
   IServerResponsePayload,
-} from '../../../../../shared/web/http'
-import { AppError, Errors, HttpCodes } from '../../../../../shared/error'
+} from '../../../../../shared/web/http';
+import VerifyUserService from '../../../application/user.verify.service';
+import AppError, {
+  Errors,
+  HttpCodes,
+} from '../../../../../shared/errors/app.error';
 
-export class VerifyUserController implements IController {
-  constructor(private readonly _verifyUserService: VerifyUserService) {}
+export default class VerifyUserController implements IController {
+  constructor(private readonly verifyUserService: VerifyUserService) {}
 
   dispatch = async (
     req: IRequest,
     res: IServerResponse,
-    next: (...args: any[]) => any
+    next: (...args: any[]) => any,
   ): Promise<void> => {
     try {
-      const result = await this._verifyUserService.handle(req.params.token)
+      const result = await this.verifyUserService.handle(req.params.token);
       if (result.success) {
         const response: IServerResponsePayload<void> = {
           status: 'ok',
           message: result.message,
-        }
-        res.json(response)
+        };
+        res.json(response);
       } else {
         throw new AppError(
           Errors.RESOURCE_NOT_FOUND,
           HttpCodes.NOT_FOUND,
           result.message,
-          true
-        )
+          true,
+        );
       }
     } catch (error) {
       if (error instanceof JsonWebTokenError) {
@@ -39,12 +42,12 @@ export class VerifyUserController implements IController {
             Errors.RESOURCE_NOT_FOUND,
             HttpCodes.NOT_FOUND,
             error.message,
-            true
-          )
-        )
+            true,
+          ),
+        );
       } else {
-        next(error)
+        next(error);
       }
     }
-  }
+  };
 }

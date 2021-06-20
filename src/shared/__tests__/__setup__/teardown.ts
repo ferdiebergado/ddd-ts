@@ -1,5 +1,5 @@
-import { dbConnection } from '../../persistence'
+import DbConnection from '../../persistence';
 
 export default async (): Promise<void> => {
-  return await dbConnection.close()
-}
+  await DbConnection.close();
+};

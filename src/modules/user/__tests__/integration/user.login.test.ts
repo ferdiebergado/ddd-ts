@@ -1,30 +1,38 @@
+import faker from 'faker';
 import {
   loginUser,
   login,
-  registerAndVerifyUser,
   dropTestUserStorage,
+  createUser,
 } from '../__setup__/user.setup';
-import { user } from '../__fixtures__/user.fixtures';
+import user from '../__fixtures__/user.fixtures';
 import { LoginUserDto } from '../../application/user.login.service';
-import { Messages } from '../../../../messages';
+import Messages from '../../../../messages';
 import { IServerResponsePayload } from '../../../../shared/web/http';
 import { ValidationErrorBag } from '../../../../shared/entity';
-import { userRepository } from '../../infrastructure/persistence';
+import userRepository from '../../infrastructure/persistence';
+import { RegisterUserDto } from '../../application/user.register.service';
 
-describe('User Login', () => {
-  // eslint-disable-next-line @typescript-eslint/return-await
-  beforeAll(async () => await registerAndVerifyUser());
+describe('User Login #api #hot', () => {
+  let newUser: RegisterUserDto;
+  let userId: string;
 
-  // eslint-disable-next-line @typescript-eslint/return-await
-  afterAll(async () => await dropTestUserStorage());
+  beforeEach(async () => {
+    newUser = user();
+    userId = await createUser(newUser);
+  });
 
-  describe(`POST ${login}`, () => {
-    it('should login the user', async () =>
-      new Promise<void>((resolve) =>
+  afterAll(async () => {
+    await dropTestUserStorage();
+  });
+
+  describe(`POST ${login} #hot #login`, () => {
+    it('should login the user when input is valid', async () => {
+      await new Promise<void>((resolve) =>
         setTimeout(async () => {
           const creds: LoginUserDto = {
-            email: user.email,
-            password: user.password,
+            email: newUser.email,
+            password: newUser.password,
           };
           const { statusCode, body } = await loginUser(creds);
           expect(statusCode).toBe(200);
@@ -34,16 +42,17 @@ describe('User Login', () => {
           });
           resolve();
         }, 300),
-      ));
+      );
+    });
 
     it.each(['email', 'password'])(
       'should return an error when %s is empty',
-      async (field) =>
-        new Promise<void>((resolve) =>
+      async (field) => {
+        await new Promise<void>((resolve) =>
           setTimeout(async () => {
             let creds: LoginUserDto = {
-              email: user.email,
-              password: user.password,
+              email: newUser.email,
+              password: newUser.password,
             };
             creds = { ...creds, [field]: null };
             const { statusCode, body } = await loginUser(creds);
@@ -58,16 +67,17 @@ describe('User Login', () => {
             });
             resolve();
           }, 100),
-        ),
+        );
+      },
     );
 
     // eslint-disable-next-line jest/expect-expect
-    it('should return an error when user email does not exist', async () =>
-      new Promise<void>((resolve) =>
+    it('should return an error when user email does not exist', async () => {
+      await new Promise<void>((resolve) =>
         setTimeout(async () => {
           const creds: LoginUserDto = {
-            email: 'abc@example.com',
-            password: user.password,
+            email: faker.internet.email(),
+            password: newUser.password,
           };
           const { statusCode, body } = await loginUser(creds);
 
@@ -81,15 +91,16 @@ describe('User Login', () => {
           });
           resolve();
         }, 100),
-      ));
+      );
+    });
 
     // eslint-disable-next-line jest/expect-expect
-    it('should return an error when password is incorrect', async () =>
-      new Promise<void>((resolve) =>
+    it('should return an error when password is incorrect', async () => {
+      await new Promise<void>((resolve) =>
         setTimeout(async () => {
           const creds: LoginUserDto = {
-            email: user.email,
-            password: 'incorrect_password',
+            email: newUser.email,
+            password: faker.random.alphaNumeric(),
           };
           const { statusCode, body } = await loginUser(creds);
 
@@ -103,21 +114,17 @@ describe('User Login', () => {
           });
           resolve();
         }, 100),
-      ));
+      );
+    });
 
     it('should return an error when email is not yet verified', async () => {
-      await userRepository.update(
-        { email: user.email },
-        {
-          emailVerifiedAt: '',
-        },
-      );
+      await userRepository().updateById(userId, { emailVerifiedAt: '' });
 
-      return new Promise<void>((resolve) =>
+      await new Promise<void>((resolve) =>
         setTimeout(async () => {
           const creds: LoginUserDto = {
-            email: user.email,
-            password: user.password,
+            email: newUser.email,
+            password: newUser.password,
           };
           const { statusCode, body } = await loginUser(creds);
           expect(statusCode).toBe(401);
@@ -134,19 +141,15 @@ describe('User Login', () => {
     });
 
     it('should return an error when account is deactivated', async () => {
-      await userRepository.update(
-        { email: user.email },
-        {
-          isActive: false,
-          emailVerifiedAt: new Date().toISOString(),
-        },
-      );
+      await userRepository().updateById(userId, {
+        isActive: false,
+      });
 
-      return new Promise<void>((resolve) =>
+      await new Promise<void>((resolve) =>
         setTimeout(async () => {
           const creds: LoginUserDto = {
-            email: user.email,
-            password: user.password,
+            email: newUser.email,
+            password: newUser.password,
           };
           const { statusCode, body } = await loginUser(creds);
           expect(statusCode).toBe(401);
@@ -158,7 +161,7 @@ describe('User Login', () => {
             },
           });
           resolve();
-        }, 500),
+        }, 100),
       );
     });
   });

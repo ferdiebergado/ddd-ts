@@ -1,4 +1,4 @@
-import { dbConnection } from '../../../../shared/persistence'
-import { UserMongodbRepository } from './mongodb/user.mongodb.repository'
+import UserMongodbRepository from './mongodb/user.mongodb.repository';
+import MongodbConnection from '../../../../shared/persistence';
 
-export const userRepository = new UserMongodbRepository(dbConnection)
+export default () => new UserMongodbRepository(MongodbConnection);

@@ -1,28 +1,36 @@
-import nodemailer from 'nodemailer'
-import config from '../../../../../config'
+import nodemailer from 'nodemailer';
 import {
   Email,
   IEmailProvider,
-} from '../../../application/email.provider.interface'
+} from '../../../application/email.provider.interface';
 
-const { mail } = config
-const transportOptions =
-  process.env.NODE_ENV === 'production' ? mail.production : mail.development
-const smtpTransport = nodemailer.createTransport(transportOptions)
+export default class NodemailerEmailProvider implements IEmailProvider {
+  transportOptions;
 
-export class NodemailerEmailProvider implements IEmailProvider {
+  smtpTransport: nodemailer.Transporter;
+
+  constructor(public readonly options: any) {
+    this.transportOptions =
+      process.env.NODE_ENV === 'production'
+        ? this.options.production
+        : this.options.development;
+    this.smtpTransport = nodemailer.createTransport(this.transportOptions);
+  }
+
   send(email: Email): void {
     if (!email.from) {
+      // eslint-disable-next-line no-param-reassign
       email.from =
         process.env.NODE_ENV === 'production'
-          ? mail.production.auth.user
-          : mail.from
+          ? this.options.production.auth.user
+          : this.options.from;
     }
-    console.log('Sending email...')
-    smtpTransport.sendMail(email, (error) => {
-      if (error) return console.error(error)
+    console.log('Sending email...');
+    this.smtpTransport.sendMail(email, (error) => {
+      if (error) return console.error(error);
       // console.log(JSON.stringify(response))
-      smtpTransport.close()
-    })
+      console.log('Email sent.');
+      return this.smtpTransport.close();
+    });
   }
 }

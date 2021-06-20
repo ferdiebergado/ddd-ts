@@ -1,40 +1,42 @@
-import { AppError, Errors, HttpCodes } from '../../../../../shared/error'
 import {
   IController,
   IRequest,
   IServerResponse,
   IServerResponsePayload,
-} from '../../../../../shared/web/http'
-import {
+} from '../../../../../shared/web/http';
+import UserProfileService, {
   UserProfile,
-  UserProfileService,
-} from '../../../application/user.profile.service'
+} from '../../../application/user.profile.service';
+import AppError, {
+  Errors,
+  HttpCodes,
+} from '../../../../../shared/errors/app.error';
 
-export class UserProfileController implements IController {
-  constructor(private readonly _userProfileService: UserProfileService) {}
+export default class UserProfileController implements IController {
+  constructor(private readonly userProfileService: UserProfileService) {}
 
   dispatch = async (
     req: IRequest,
     res: IServerResponse,
-    next: (...args: any[]) => any
+    next: (...args: any[]) => any,
   ): Promise<void | IServerResponse> => {
     try {
-      const result = await this._userProfileService.handle(req.params.id)
+      const result = await this.userProfileService.handle(req.params.id);
       if (!result.success)
         throw new AppError(
           Errors.RESOURCE_NOT_FOUND,
           HttpCodes.NOT_FOUND,
           result.message,
-          true
-        )
+          true,
+        );
       const response: IServerResponsePayload<UserProfile> = {
         status: 'ok',
         message: result.message,
         data: result.data,
-      }
-      res.json(response)
+      };
+      res.json(response);
     } catch (e) {
-      next(e)
+      next(e);
     }
-  }
+  };
 }

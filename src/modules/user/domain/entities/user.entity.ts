@@ -1,5 +1,5 @@
 import { Entity, ValidationError } from '../../../../shared/entity';
-import { Messages } from '../../../../messages';
+import Messages from '../../../../messages';
 import { isAlphaNum, isEmail } from '../../../../shared/utils/helpers';
 
 export interface IUser {

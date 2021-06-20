@@ -1,10 +1,10 @@
-export type Class = new (...args: any[]) => any
+export type Class = new (...args: any[]) => any;
 
 export const Mixin = <Base extends Class>(base: Base): Base =>
-  class extends base {}
+  class extends base {};
 
-const Mixed = Mixin(Mixin(class {}))
+const Mixed = Mixin(Mixin(class {}));
 
-export type MixedInType = InstanceType<typeof Mixed>
+export type MixedInType = InstanceType<typeof Mixed>;
 
-export class MixedMixin extends Mixed {}
+export default class MixedMixin extends Mixed {}

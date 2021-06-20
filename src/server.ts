@@ -1,47 +1,50 @@
-import http from 'http'
-import app from './app'
-import config from './config'
-import { dbConnection } from './shared/persistence'
+import http from 'http';
+import Application from './app';
+import expressApplication from './shared/web/http/express/express.application';
+import config from './config';
+import routes from './routes';
+import DbConnection from './shared/persistence';
 
-const PORT = config.web.http.port
-const server = http.createServer(app)
+const PORT = config.web.http.port;
+const app = new Application(expressApplication, routes);
+const server = http.createServer(app.getRequestListener());
 
 const cleanUp = async () => {
-  console.log('Cleaning up...')
+  console.log('Cleaning up...');
 
-  await dbConnection.close()
+  await DbConnection.close();
 
   server.close((err) => {
-    if (err) return console.error('[ERROR]', err)
-    console.log('Server closed.')
-  })
-}
+    if (err) return console.error('[ERROR]', err);
+    return console.log('Server closed.');
+  });
+};
 
 process.on('uncaughtException', async (e) => {
-  console.error('[ERROR] UNCAUGHT_EXCEPTION: ', e)
-  await cleanUp()
-  process.exit(1)
-})
+  console.error('[ERROR] UNCAUGHT_EXCEPTION: ', e);
+  await cleanUp();
+  process.exit(1);
+});
 
 process.on('unhandledRejection', async (e) => {
-  console.error('[ERROR] UNHANDLED_PROMISE_REJECTION: ', e)
-  await cleanUp()
-  process.exit(1)
-})
+  console.error('[ERROR] UNHANDLED_PROMISE_REJECTION: ', e);
+  await cleanUp();
+  process.exit(1);
+});
 
 process.on('SIGTERM', async () => {
-  console.log('SIGTERM signal received. Restarting server...')
-  await cleanUp()
-})
+  console.log('SIGTERM signal received. Restarting server...');
+  await cleanUp();
+});
 
 const connectDb = async () => {
-  await dbConnection.testConnection()
-  console.log('Database connected.')
+  await DbConnection.testConnection();
+  console.log('Database connected.');
 
-  server.listen(PORT, () => console.log(`Listening on port ${PORT}...`))
-}
+  server.listen(PORT, () => console.log(`Listening on port ${PORT}...`));
+};
 
 connectDb().catch((err) => {
-  console.error('[ERROR]', err)
-  console.log('Cannot connect to the database.')
-})
+  console.error('[ERROR]', err);
+  console.log('Cannot connect to the database.');
+});

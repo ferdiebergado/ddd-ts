@@ -3,25 +3,29 @@ import {
   register,
   dropTestUserStorage,
 } from '../__setup__/user.setup';
-import { user } from '../__fixtures__/user.fixtures';
+import user from '../__fixtures__/user.fixtures';
 import {
   mailer,
   assertResponseErrors,
 } from '../../../../shared/__tests__/__setup__/setup';
-import { Messages } from '../../../../messages';
+import Messages from '../../../../messages';
 import { User } from '../../domain/entities/user.entity';
 import { RegisterUserDto } from '../../application/user.register.service';
 import { randomString } from '../../../../shared/utils/helpers';
 import { IServerResponsePayload } from '../../../../shared/web/http';
 import { EntityIdField } from '../../../../shared/entity';
 
-describe('User Registration', () => {
-  afterAll(async () => dropTestUserStorage());
+describe('User Registration #api #hot', () => {
+  const newUser = user();
+
+  afterAll(async () => {
+    await dropTestUserStorage();
+  });
 
   afterEach(async () => {
     // return new Promise<void>((resolve) =>
     //   setTimeout(async () => {
-    const result = await mailer.latestTo(user.email);
+    const result = await mailer.latestTo(newUser.email);
     await mailer.deleteMessage(result.ID);
     //     resolve()
     //   }, 300)
@@ -30,7 +34,7 @@ describe('User Registration', () => {
 
   describe(`POST ${register} #api`, () => {
     it('should return success and user id when input is valid', async () => {
-      const { statusCode, body } = await registerUser(user);
+      const { statusCode, body } = await registerUser(newUser);
       expect(statusCode).toEqual(201);
       expect(body).toEqual<IServerResponsePayload<EntityIdField>>({
         status: 'ok',
@@ -39,10 +43,10 @@ describe('User Registration', () => {
       });
     });
 
-    it.each(Object.keys(user))(
+    it.each(Object.keys(newUser))(
       'should return an error when %s is empty',
       async (key) => {
-        const invalidUser = { ...user, [key]: null };
+        const invalidUser = { ...newUser, [key]: null };
         const response = await registerUser(invalidUser);
         assertResponseErrors({
           response,
@@ -57,7 +61,7 @@ describe('User Registration', () => {
       'should return an error when %s is not alphanumeric',
       async (key) => {
         const nonAlpha = '<a href="javascript:void()"></a>';
-        const invalidUser = { ...user, [key]: nonAlpha };
+        const invalidUser = { ...newUser, [key]: nonAlpha };
         if (key === 'password') invalidUser.passwordConfirmation = nonAlpha;
         const response = await registerUser(invalidUser);
         assertResponseErrors({
@@ -72,7 +76,7 @@ describe('User Registration', () => {
     it.each(['lastName', 'firstName'])(
       'should return an error when %s is too short',
       async (key) => {
-        const invalidUser = { ...user, [key]: 'a' };
+        const invalidUser = { ...newUser, [key]: 'a' };
         const response = await registerUser(invalidUser);
         assertResponseErrors({
           response,
@@ -86,7 +90,7 @@ describe('User Registration', () => {
     // eslint-disable-next-line jest/expect-expect
     it('should return an error when email is too short', async () => {
       const field = 'email';
-      const invalidUser = { ...user, [field]: 'a@b.c' };
+      const invalidUser = { ...newUser, [field]: 'a@b.c' };
       const response = await registerUser(invalidUser);
       assertResponseErrors({
         response,
@@ -101,7 +105,7 @@ describe('User Registration', () => {
       const field = 'password';
       const short = 'short';
       const invalidUser: RegisterUserDto = {
-        ...user,
+        ...newUser,
         [field]: short,
         passwordConfirmation: short,
       };
@@ -117,7 +121,7 @@ describe('User Registration', () => {
     it.each(['lastName', 'firstName'])(
       'should return an error when %s is too long',
       async (key) => {
-        const invalidUser = { ...user, [key]: randomString(200) };
+        const invalidUser = { ...newUser, [key]: randomString(200) };
         const response = await registerUser(invalidUser);
         assertResponseErrors({
           response,
@@ -133,7 +137,7 @@ describe('User Registration', () => {
       const field = 'email';
       const long = `${randomString(200)}@yagoo.com`;
       const invalidUser: RegisterUserDto = {
-        ...user,
+        ...newUser,
         [field]: long,
       };
       const response = await registerUser(invalidUser);
@@ -150,7 +154,7 @@ describe('User Registration', () => {
       const field = 'password';
       const long = randomString(200);
       const invalidUser: RegisterUserDto = {
-        ...user,
+        ...newUser,
         [field]: long,
         passwordConfirmation: long,
       };
@@ -167,7 +171,7 @@ describe('User Registration', () => {
     it('should return an error when email is a not valid email', async () => {
       const field = 'email';
       const invalidEmail = 'invalid';
-      const invalidUser = { ...user, [field]: invalidEmail };
+      const invalidUser = { ...newUser, [field]: invalidEmail };
       const response = await registerUser(invalidUser);
       assertResponseErrors({
         response,
@@ -181,7 +185,7 @@ describe('User Registration', () => {
     it('should return an error when passwords do not match', async () => {
       const field = 'password';
       const passwordConfirmation = 'different';
-      const invalidUser = { ...user, [field]: passwordConfirmation };
+      const invalidUser = { ...newUser, [field]: passwordConfirmation };
       const response = await registerUser(invalidUser);
       assertResponseErrors({
         response,
@@ -193,8 +197,8 @@ describe('User Registration', () => {
 
     // eslint-disable-next-line jest/expect-expect
     it('should return an error when email is already taken', async () => {
-      await registerUser(user);
-      const response = await registerUser(user);
+      await registerUser(newUser);
+      const response = await registerUser(newUser);
       assertResponseErrors({
         response,
         message: Messages.EMAIL_TAKEN,
@@ -204,17 +208,18 @@ describe('User Registration', () => {
     });
 
     it('sends a verification email when input is valid #email', async () => {
-      await registerUser(user);
+      expect.assertions(2);
+      await registerUser(newUser);
 
-      return new Promise<void>((resolve) =>
+      await new Promise<void>((resolve) =>
         setTimeout(async () => {
-          const { subject, html } = await mailer.latestTo(user.email);
+          const { subject, html } = await mailer.latestTo(newUser.email);
           expect(subject).toBe(Messages.USER_VERIFICATION);
           expect(html).toEqual(
             expect.stringContaining('Please verify your account'),
           );
           resolve();
-        }, 500),
+        }, 300),
       );
     });
   });

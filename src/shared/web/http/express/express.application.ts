@@ -1,53 +1,53 @@
-import express, { Request, Response } from 'express'
-import { IRequestListener } from '../../../../app'
-import { notFound, errorHandler, cors, logger } from './middlewares'
-import { IRouteGroup } from '../.'
+import express, { Request, Response } from 'express';
+import { IRequestListener } from '../../../../app';
+import { notFound, errorHandler, cors, logger } from './middlewares';
+import { IRouteGroup } from '..';
 
 class ExpressApplication implements IRequestListener {
-  private readonly _app: express.Application
+  private readonly app: express.Application;
 
   constructor() {
-    this._app = express()
+    this.app = express();
   }
 
   bootstrap() {
-    this._setOptions()
-    this._setupGlobalMiddlewares()
-    this._setupRoutes()
+    this.setOptions();
+    this.setupGlobalMiddlewares();
+    this.setupRoutes();
   }
 
   addRoute(route: IRouteGroup): void {
-    const { path, router } = route
-    this._app.use(path, router.router)
+    const { path, router } = route;
+    this.app.use(path, router.router);
   }
 
   start() {
-    this._setErrorHandlers()
-    return this._app
+    this.setErrorHandlers();
+    return this.app;
   }
 
-  private _setOptions() {
-    this._app.disable('x-powered-by')
-    this._app.disable('etag')
+  private setOptions() {
+    this.app.disable('x-powered-by');
+    this.app.disable('etag');
   }
 
-  private _setupGlobalMiddlewares() {
-    this._app.use(logger)
-    this._app.use(express.urlencoded({ extended: false }))
-    this._app.use(express.json())
-    this._app.use(cors)
+  private setupGlobalMiddlewares() {
+    this.app.use(logger);
+    this.app.use(express.urlencoded({ extended: false }));
+    this.app.use(express.json());
+    this.app.use(cors);
   }
 
-  private _setupRoutes() {
-    this._app.get('/ping', (_req: Request, res: Response) => {
-      res.json({ status: 'ok', version: '0.0.1' })
-    })
+  private setupRoutes() {
+    this.app.get('/ping', (_req: Request, res: Response) => {
+      res.json({ status: 'ok', version: '0.0.1' });
+    });
   }
 
-  private _setErrorHandlers() {
-    this._app.use(notFound)
-    this._app.use(errorHandler)
+  private setErrorHandlers() {
+    this.app.use(notFound);
+    this.app.use(errorHandler);
   }
 }
 
-export default new ExpressApplication()
+export default new ExpressApplication();

@@ -1,19 +1,19 @@
-import { IncomingMessage, ServerResponse } from 'http'
-import config from '../../../../config'
+import { IncomingMessage, ServerResponse } from 'http';
+import config from '../../../../config';
 
-const { cors } = config.web.http
+const { cors } = config.web.http;
 
 export default (
   req: IncomingMessage,
   res: ServerResponse,
-  next: () => any
+  next: () => any,
 ): void => {
-  res.setHeader('Access-Control-Allow-Origin', cors.origin)
+  res.setHeader('Access-Control-Allow-Origin', cors.origin);
   if (req.method && req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Methods', cors.methods)
-    res.setHeader('Access-Control-Allow-Headers', cors.headers)
-    res.statusCode = 204
-    return res.end()
+    res.setHeader('Access-Control-Allow-Methods', cors.methods);
+    res.setHeader('Access-Control-Allow-Headers', cors.headers);
+    res.statusCode = 204;
+    return res.end();
   }
-  next()
-}
+  return next();
+};

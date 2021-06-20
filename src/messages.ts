@@ -1,4 +1,4 @@
-export enum Messages {
+enum Messages {
   INVALID_INPUT = 'Invalid input',
   EMAIL_INVALID = 'email is not a valid email',
   PASSWORD_MISMATCH = 'passwords do not match',
@@ -13,3 +13,5 @@ export enum Messages {
   RESOURCE_NOT_FOUND = 'Resource not found',
   USER_PROFILE_RETRIEVED = 'User profile retrieved',
 }
+
+export default Messages;
