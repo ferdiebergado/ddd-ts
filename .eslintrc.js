@@ -6,8 +6,6 @@ module.exports = {
   },
   plugins: ['@typescript-eslint', 'jest'],
   extends: [
-    // 'eslint:recommended',
-    // 'plugin:@typescript-eslint/recommended',
     'plugin:jest/recommended',
     'plugin:jest/style',
     'airbnb-typescript',
@@ -18,4 +16,12 @@ module.exports = {
       version: 27,
     },
   },
+  overrides: [
+    {
+      files: ['**/*.ts'],
+      rules: {
+        'no-console': 'off',
+      },
+    },
+  ],
 };
