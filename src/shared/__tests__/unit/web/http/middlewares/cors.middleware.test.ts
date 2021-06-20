@@ -1,61 +1,68 @@
-import { IncomingMessage, ServerResponse } from 'http';
 import '../../../../../utils/env';
 import config from '../../../../../../config';
 import { cors } from '../../../../../web/http/middlewares';
+import { IRequest, IServerResponse } from '../../../../../web/http';
 
-describe('Cors Middleware', () => {
-  let mockRequest: Partial<IncomingMessage>;
-  let mockResponse: Partial<ServerResponse>;
+describe('CORS Middleware #cold', () => {
+  let mockRequest: Partial<IRequest>;
+  let mockResponse: Partial<IServerResponse>;
   let mockNextFunction: () => any;
+  let responseHeaders: any;
+
   const corsConfig = config.web.http.cors;
   const allowedMethods = corsConfig.methods.split(', ');
 
   beforeEach(() => {
-    mockResponse = { setHeader: jest.fn(), end: jest.fn() };
+    mockRequest = {};
+    mockResponse = {
+      setHeader: jest.fn().mockImplementation((name, value) => {
+        responseHeaders = { ...responseHeaders, [name]: value };
+      }),
+      end: jest.fn(),
+    };
+    responseHeaders = {};
     mockNextFunction = jest.fn();
   });
 
   it.each(allowedMethods)(
     'sets the Origin header on %s request',
     async (method) => {
+      const expectedCorsOriginResponseHeader = {
+        'Access-Control-Allow-Origin': corsConfig.origin,
+      };
+
       mockRequest = { method };
 
       cors(
-        mockRequest as IncomingMessage,
-        mockResponse as ServerResponse,
+        mockRequest as IRequest,
+        mockResponse as IServerResponse,
         mockNextFunction,
       );
 
-      expect(mockResponse.setHeader).toHaveBeenCalledWith(
-        'Access-Control-Allow-Origin',
-        corsConfig.origin,
+      expect(responseHeaders).toEqual(
+        expect.objectContaining(expectedCorsOriginResponseHeader),
       );
-
-      expect(mockNextFunction).toHaveBeenCalledTimes(1);
     },
   );
 
   it('sets Methods and Headers on preflight request', async () => {
+    const expectedCorsResponseHeaders = {
+      'Access-Control-Allow-Methods': corsConfig.methods,
+      'Access-Control-Allow-Headers': corsConfig.headers,
+    };
+
     mockRequest = { method: 'OPTIONS' };
 
     cors(
-      mockRequest as IncomingMessage,
-      mockResponse as ServerResponse,
+      mockRequest as IRequest,
+      mockResponse as IServerResponse,
       mockNextFunction,
     );
 
-    expect(mockResponse.setHeader).toHaveBeenCalledWith(
-      'Access-Control-Allow-Methods',
-      corsConfig.methods,
-    );
-
-    expect(mockResponse.setHeader).toHaveBeenCalledWith(
-      'Access-Control-Allow-Headers',
-      corsConfig.headers,
-    );
-
     expect(mockResponse.statusCode).toBe(204);
-    expect(mockResponse.end).toHaveBeenCalledTimes(1);
-    expect(mockNextFunction).toHaveBeenCalledTimes(0);
+
+    expect(responseHeaders).toEqual(
+      expect.objectContaining(expectedCorsResponseHeaders),
+    );
   });
 });
