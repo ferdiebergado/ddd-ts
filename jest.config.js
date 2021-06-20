@@ -11,4 +11,4 @@ module.exports = {
   // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   globalTeardown: '<rootDir>/src/shared/__tests__/__setup__/teardown.ts',
   testTimeout: 10000,
-}
+};
