@@ -1,13 +1,13 @@
-import { ServerResponse } from 'http'
+import { ServerResponse } from 'http';
 
 export interface IServerResponse extends ServerResponse {
-  statusCode: number
-  json: (payload: any) => void
-  locals: any
+  statusCode: number;
+  json: (payload: any) => void;
+  locals: any;
 }
 
-export interface IServerResponsePayload<T = undefined> {
-  status: 'ok' | 'failed'
-  message: string
-  data?: T
+export interface IServerResponsePayload<T> {
+  status: 'ok' | 'failed';
+  message: string;
+  data?: T;
 }

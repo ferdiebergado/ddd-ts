@@ -1,5 +1,5 @@
-export interface Result<T = undefined> {
-  success: boolean
-  message: string
-  data?: T
+export interface Result<T> {
+  success: boolean;
+  message: string;
+  data?: T;
 }
