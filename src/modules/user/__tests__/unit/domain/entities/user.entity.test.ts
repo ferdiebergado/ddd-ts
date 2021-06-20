@@ -100,8 +100,8 @@ describe('User Entity', () => {
     },
   );
 
-  it('updatedAt property can be updated', async () =>
-    new Promise<void>((resolve) =>
+  it('updatedAt property can be updated', async () => {
+    await new Promise<void>((resolve) =>
       setTimeout(() => {
         user.touch();
         expect(new Date(user.updatedAt).getTime()).toBeGreaterThan(
@@ -109,5 +109,6 @@ describe('User Entity', () => {
         );
         resolve();
       }, 1),
-    ));
+    );
+  });
 });
