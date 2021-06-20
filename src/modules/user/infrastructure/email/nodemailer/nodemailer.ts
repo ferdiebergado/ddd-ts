@@ -5,9 +5,9 @@ import {
 } from '../../../application/email.provider.interface';
 
 export default class NodemailerEmailProvider implements IEmailProvider {
-  transportOptions;
+  private readonly transportOptions;
 
-  smtpTransport: nodemailer.Transporter;
+  private readonly smtpTransport: nodemailer.Transporter;
 
   constructor(public readonly options: any) {
     this.transportOptions =
