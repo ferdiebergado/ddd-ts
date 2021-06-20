@@ -3,7 +3,7 @@ import LoginUserService from './user.login.service';
 import VerifyUserService from './user.verify.service';
 import UserProfileService from './user.profile.service';
 import userRepository from '../infrastructure/persistence';
-import { hashProvider } from '../domain/providers';
+import hashProvider from '../domain/providers/hash';
 import { jwtProvider } from '../../../shared/security';
 
 export const registerUserService = () =>
