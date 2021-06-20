@@ -26,11 +26,13 @@ export default {
     },
   },
   security: {
+    key:
+      process.env.KEY ||
+      'YjU0OGE1ZGE0YTA0ZDE0YjlhNmU1ZTdlMjFiYTI1MmU3ZjBmM2M5M2IyNzUzMTg5YTU1MTAyZDllODNlNTUzNAo=',
     hash: {
       algorithm: process.env.CRYPTO_ALGORITHM || 'sha512',
     },
     jwt: {
-      key: process.env.KEY || '4trUKpKwo6dkWK3HlLPvag==',
       options: {
         algorithm: 'HS256',
         expiresIn: 60 * 60 * 30,
@@ -57,4 +59,4 @@ export default {
     },
     from: 'mail@localhost.test',
   },
-}
+};

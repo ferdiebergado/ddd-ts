@@ -2,7 +2,10 @@ import jwt from 'jsonwebtoken';
 import { IJwtPayload, IJwtProvider } from '../jwt.provider.interface';
 import config from '../../../../config';
 
-const { key, options } = config.security.jwt;
+const {
+  key,
+  jwt: { options },
+} = config.security;
 
 export default class JsonWebTokenJwtProvider implements IJwtProvider {
   // eslint-disable-next-line class-methods-use-this
