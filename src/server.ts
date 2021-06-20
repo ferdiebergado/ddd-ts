@@ -1,4 +1,4 @@
-import http from 'http';
+import { Server } from 'http';
 import Application from './app';
 import expressApplication from './shared/web/http/express/express.application';
 import config from './config';
@@ -7,7 +7,7 @@ import DbConnection from './shared/persistence';
 
 const PORT = config.web.http.port;
 const app = new Application(expressApplication, routes);
-const server = new http.Server(app.getRequestListener());
+const server = new Server(app.getRequestListener());
 
 const cleanUp = async () => {
   console.log('Cleaning up...');
