@@ -5,7 +5,9 @@ import { IRouteGroup } from './shared/web/http';
 
 const { baseUrl } = config.web.http;
 
-export default [
+const routes: IRouteGroup[] = [
   { path: `${baseUrl}/v1/auth`, router: authRouter },
   { path: `${baseUrl}/v1/users`, router: userRouter },
-] as IRouteGroup[];
+];
+
+export default routes;
