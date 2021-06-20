@@ -1,6 +1,5 @@
-import { ServerResponse } from 'http';
 import { ValidationErrorBag } from '../entity';
-import { IServerResponsePayload } from '../web/http';
+import { IServerResponse, IServerResponsePayload } from '../web/http';
 import AppError from './app.error';
 
 export default class ErrorHandler {
@@ -12,7 +11,7 @@ export default class ErrorHandler {
     console.error('[ERROR]', this.error);
   }
 
-  toHttpResponse(res: ServerResponse): void {
+  toHttpResponse(res: IServerResponse): void {
     const response: IServerResponsePayload<void | ValidationErrorBag> = {
       status: 'failed',
       message: this.error.description,
