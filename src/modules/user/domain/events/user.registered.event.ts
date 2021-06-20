@@ -9,9 +9,8 @@ export default (): void => {
   eventEmitter.on('user:registered', (user: User) => {
     const { host, baseUrl } = config.web.http;
     const uri = '/v1/auth/verify';
-    const jwt = jwtProvider();
     // eslint-disable-next-line no-underscore-dangle
-    const token = jwt.sign({ sub: user._id });
+    const token = jwtProvider().sign({ sub: user._id });
     const verificationLink = `${host}${baseUrl}${uri}/${token}`;
     const email = {
       to: user.email,
