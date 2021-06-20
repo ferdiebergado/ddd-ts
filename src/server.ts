@@ -7,7 +7,7 @@ import DbConnection from './shared/persistence';
 
 const PORT = config.web.http.port;
 const app = new Application(expressApplication, routes);
-const server = http.createServer(app.getRequestListener());
+const server = new http.Server(app.getRequestListener());
 
 const cleanUp = async () => {
   console.log('Cleaning up...');
