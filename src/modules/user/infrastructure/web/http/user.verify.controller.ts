@@ -20,18 +20,20 @@ export default class VerifyUserController implements IController {
     next: (...args: any[]) => any,
   ): Promise<void> => {
     try {
-      const result = await this.verifyUserService.handle(req.params.token);
-      if (result.success) {
+      const { success, message } = await this.verifyUserService.handle(
+        req.params.token,
+      );
+      if (success) {
         const response: IServerResponsePayload<void> = {
           status: 'ok',
-          message: result.message,
+          message,
         };
         res.json(response);
       } else {
         throw new AppError(
           Errors.RESOURCE_NOT_FOUND,
           HttpCodes.NOT_FOUND,
-          result.message,
+          message,
           true,
         );
       }

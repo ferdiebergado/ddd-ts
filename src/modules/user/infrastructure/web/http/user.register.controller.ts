@@ -20,13 +20,15 @@ export default class RegisterUserController implements IController {
     next: (...args: any[]) => any,
   ): Promise<void> => {
     try {
-      const result = await this.registerUserService.handle(req.body);
-      if (result.success) {
+      const { success, message, data } = await this.registerUserService.handle(
+        req.body,
+      );
+      if (success) {
         const response: IServerResponsePayload<EntityIdField> = {
           status: 'ok',
-          message: result.message,
+          message,
           // eslint-disable-next-line no-underscore-dangle
-          data: { _id: result.data._id },
+          data: { _id: data._id },
         };
         res.statusCode = 201;
         res.json(response);
@@ -34,9 +36,9 @@ export default class RegisterUserController implements IController {
         throw new AppError(
           Errors.INVALID_INPUT,
           HttpCodes.INVALID_INPUT,
-          result.message,
+          message,
           true,
-          result.data.errors,
+          data.errors,
         );
       }
     } catch (e) {

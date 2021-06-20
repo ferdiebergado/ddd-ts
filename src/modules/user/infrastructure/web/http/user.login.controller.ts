@@ -21,9 +21,9 @@ export default class LoginUserController implements IController {
   ): Promise<void> => {
     try {
       const result = await this.userLoginService.handle(req.body);
-      const { message } = result;
+      const { success, message } = result;
 
-      if (result.success) {
+      if (success) {
         const response: IServerResponsePayload<void> = {
           status: 'ok',
           message,
